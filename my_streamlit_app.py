@@ -25,38 +25,39 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Load the dataset
-link = "https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv"
-df_car = pd.read_csv(link)
+# Function to plot graphs based on selected region
+def plot_graphs(selected_region):
+    # Filter the DataFrame based on the selected region
+    filtered_df = df_car[df_car['continent'] == selected_region]
+
+    # Create a new DataFrame containing only numerical columns
+    new_df_car = df_car.loc[:, "mpg":"year"]
+
+    # Create a heatmap of correlations
+    viz_correlation = sns.heatmap(new_df_car.corr(),
+                                   center=0,
+                                   cmap=sns.color_palette("vlag", as_cmap=True))
+
+    # Display the heatmap
+    st.pyplot(viz_correlation.figure)
+
+    # Create a scatter plot
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x='mpg', y='weightlbs', data=filtered_df)
+    plt.title(f'Scatter Plot of MPG vs Weight for {selected_region}')
+
+    # Display the scatter plot
+    st.pyplot()
 
 # Create a sidebar for filtering options
 st.sidebar.header('Filter by Region')
 
 # Define the available regions
-regions = ['US', 'Europe', 'Japan']
+regions = [' US.', ' Europe.', ' Japan.']
 
 # Add a selectbox for selecting the region
 selected_region = st.sidebar.selectbox('Select Region', regions)
 
-# Filter the DataFrame based on the selected region
-filtered_df = df_car[df_car['continent'] == selected_region]
-
-# Create a new DataFrame containing only numerical columns
-new_df_car = df_car.loc[:, "mpg":"year"]
-
-# Create a heatmap of correlations
-viz_correlation = sns.heatmap(new_df_car.corr(),
-                               center=0,
-                               cmap=sns.color_palette("vlag", as_cmap=True))
-
-# Display the heatmap
-st.pyplot(viz_correlation.figure)
-
-# Create a scatter plot
-plt.figure(figsize=(8, 6))
-sns.scatterplot(x='mpg', y='weightlbs', data=df_car)
-plt.title('Scatter Plot of MPG vs Weight')
-
-# Display the scatter plot
-st.pyplot()
+# Plot graphs based on selected region
+plot_graphs(selected_region)
 
